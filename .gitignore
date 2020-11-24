@@ -1,0 +1,6 @@
+__pycache__/*
+.coverage
+*.c
+*.out
+mathhelpers.h
+splc.py

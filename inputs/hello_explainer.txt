@@ -1,0 +1,61 @@
+Romeo = -64
+Romeo = 8 - Romeo
+> Romeo = 72
+
+#You are as brave as the sum of your fat little stuffed misused dusty
+#old rotten codpiece and a beautiful fair warm peaceful sunny summer's
+#day. You are as healthy as the difference between the sum of the
+#sweetest reddest rose and my father and yourself!
+Romeo = -128 + 32 # Romeo -96
+Romeo = (4 + 1) - Romeo
+> Romeo 101 ("e")
+
+#You are as cowardly as the sum of yourself and the difference
+#between a big mighty proud kingdom and a horse. Speak your mind.
+Romeo = Romeo + (8 - 1) => 101 + 7
+> Rome = 108 ("l")
+
+# Thou art as sweet as the sum of the sum of Romeo and his horse and his
+# black cat! Speak thy mind!
+Juliet = (Romeo + 1) + 2 => 108 + 3 => 111 ("o")
+
+# product of a large rural town and my amazing bottomless embroidered purse
+Ophelia = 4 * 8 => 32 (" ")
+
+#Thou art as loving as the product of the bluest clearest sweetest sky
+#and the sum of a squirrel and a white horse. Thou art as beautiful as
+#the difference between Juliet and thyself. Speak thy mind!
+Ophelia = 8 * (1 + 2) # Ophelia = 24
+Ophelia = Juliet - Ophelia => 111 - 24 => 87 ("W")
+
+# Speak Juliet
+=> "o"
+
+#You are as worried as the sum of yourself and the
+#difference between my small smooth hamster and my nose.
+Juliet = Juliet + (4 - 1) => 111 + 3 => 114 ("r")
+
+# Speak Romeo
+=> "l"
+
+#You are as bad as Hamlet! You are as small as the
+# difference between the square of the difference between my little pony
+# and your big hairy hound and the cube of your sorry little
+# codpiece. Speak your mind!
+Romeo = 0
+Romeo = (2 - -4)^2 - (-4)^3 => 36 - -64 => 100 ("d")
+
+# Juliet to Ophelia
+# Thou art as good as the quotient between Romeo and the sum of a small
+# furry animal and a leech. Speak your mind!
+Ophelia = Romeo / (4 + -1) => 100 / 3 => 33 ("!")
+
+#Ophelia to Juliet
+#Thou art as disgusting as the quotient between Romeo and twice the
+#difference between a mistletoe and an oozing infected blister! Speak
+#your mind!
+Juliet = Romeo / (2 * (1 - -4)) => 100 / 10
+
+
+\n = 10
+! = 33
