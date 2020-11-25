@@ -1,0 +1,58 @@
+Outputting Input Reversedly.
+
+Othello, a stacky man.
+Lady Macbeth, who pushes him around till he pops.
+
+
+                    Act I: The one and only.
+
+                    Scene I: In the beginning, there was nothing.
+
+[Enter Othello and Lady Macbeth]
+
+#Othello:
+# You are nothing!
+Lady = 0
+
+                    Scene II: Pushing to the very end.
+
+#Lady Macbeth:
+# Open your mind! Remember yourself.
+Othello = input()
+push Othello
+
+#Othello:
+# You are as hard as the sum of yourself and a stone wall. Am I as
+# horrid as a flirt-gill?
+Lady = (Lady + 2) => 0 + 2 => 2
+(Othello == 1)?
+
+#Lady Macbeth:
+# If not, let us return to scene II. Recall your imminent death!
+if not, goto scene II
+pop Othello
+
+#Othello:
+# You are as small as the difference between yourself and a hair!
+Lady = (Lady - 1) => 2 - 1 => 1
+
+                    Scene III: Once you pop, you can't stop!
+
+#Lady Macbeth:
+# Recall your unhappy childhood. Speak your mind!
+pop Othello
+print Othello
+
+#Othello:
+# You are as vile as the sum of yourself and a toad! Are you better
+# than nothing?
+Lady = (Lady + -1)
+(Lady > 0)?
+
+#Lady Macbeth:
+# If so, let us return to scene III.
+If so, go to III
+
+                    Scene IV: The end.
+
+[Exeunt]
