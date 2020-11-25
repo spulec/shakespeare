@@ -25,7 +25,7 @@ def test_convert_scene_to_sentences():
     ]
 
 def test_parse_expression_variable():
-    VARIABLE_MAP.reset({"romeo": [65]})
+    VARIABLE_MAP.reset({"romeo": 65})
     assert parse_expression(
         "you",
         "",
@@ -34,7 +34,7 @@ def test_parse_expression_variable():
 
 
 def test_parse_expression_variable_phrase():
-    VARIABLE_MAP.reset({"romeo": [65]})
+    VARIABLE_MAP.reset({"romeo": 65})
     assert parse_expression(
         "of yourself",
         "",
@@ -44,7 +44,7 @@ def test_parse_expression_variable_phrase():
 
 @patch('converter.say_output')
 def test_parse_expression_speak(say_output):
-    VARIABLE_MAP.reset({"romeo": [65]})
+    VARIABLE_MAP.reset({"romeo": 65})
     parse_expression(
         "speak your mind",
         "",
@@ -54,7 +54,7 @@ def test_parse_expression_speak(say_output):
 
 
 def test_parse_expression_with_variable():
-    VARIABLE_MAP.reset({"romeo": [3]})
+    VARIABLE_MAP.reset({"romeo": 3})
     assert parse_expression(
         "you are as stupid as the difference between a handsome rich brave hero and thyself",
         "",
@@ -63,7 +63,7 @@ def test_parse_expression_with_variable():
 
 
 def test_parse_expression_with_difference_and_sum():
-    VARIABLE_MAP.reset({"romeo": [20]})
+    VARIABLE_MAP.reset({"romeo": 20})
     assert parse_expression(
         "you are as healthy as the difference between the sum of the sweetest reddest rose and my father and yourself",
         "",
@@ -72,7 +72,7 @@ def test_parse_expression_with_difference_and_sum():
 
 
 def test_parse_expression_with_sum_and_difference():
-    VARIABLE_MAP.reset({"romeo": [20]})
+    VARIABLE_MAP.reset({"romeo": 20})
     # assert parse_expression("difference between a big mighty proud kingdom and a horse", "") == 7
     assert parse_expression(
         "you are as cowardly as the sum of yourself and the difference between a big mighty proud kingdom and a horse",
@@ -82,7 +82,7 @@ def test_parse_expression_with_sum_and_difference():
 
 
 def test_parse_expression_with_sum_and_sum():
-    VARIABLE_MAP.reset({"romeo": [20]})
+    VARIABLE_MAP.reset({"romeo": 20})
     assert parse_expression(
         "thou art as sweet as the sum of the sum of romeo and his horse and his black cat",
         "",
@@ -108,7 +108,7 @@ def test_parse_expression_with_cube():
 
 
 def test_parse_expression_with_quotient():
-    VARIABLE_MAP.reset({"romeo": [100]})
+    VARIABLE_MAP.reset({"romeo": 100})
     assert parse_expression(
         "as good as the quotient between romeo and the sum of a small furry animal and a leech",
         "",
@@ -117,7 +117,7 @@ def test_parse_expression_with_quotient():
 
 
 def test_parse_expression_with_quotient_and_diff():
-    VARIABLE_MAP.reset({"romeo": [100]})
+    VARIABLE_MAP.reset({"romeo": 100})
     assert parse_expression(
         "as disgusting as the quotient between romeo and twice the " + 
         "difference between a mistletoe and an oozing infected blister",
@@ -127,7 +127,7 @@ def test_parse_expression_with_quotient_and_diff():
 
 
 def test_parse_expression_with_remainder():
-    VARIABLE_MAP.reset({"romeo": [5]})
+    VARIABLE_MAP.reset({"romeo": 5})
     assert parse_expression(
         "is the remainder of the quotient between romeo and a fine flower",
         "",
@@ -136,7 +136,7 @@ def test_parse_expression_with_remainder():
 
 
 def test_parse_expression_with_square_root():
-    VARIABLE_MAP.reset({"romeo": [16]})
+    VARIABLE_MAP.reset({"romeo": 16})
     assert parse_expression(
         "the square root of romeo",
         "",
@@ -150,6 +150,15 @@ def test_parse_expression_with_as_as():
         "",
         "",
     ) == 2  # sqrt(16) => 4
+
+
+def test_parse_expression_with_nothing():
+    VARIABLE_MAP.reset({"romeo": 5})
+    assert parse_expression(
+        "difference between nothing and romeo",
+        "",
+        "",
+    ) == -5  # sqrt(16) => 4
 
 
 def test_scene_enter_and_exit():

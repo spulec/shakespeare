@@ -8,8 +8,10 @@ cow
 daughter
 door
 face
+factor
 father
 fellow
+flatterer
 granddaughter
 grandfather
 grandmother
@@ -19,6 +21,7 @@ hamster
 horse
 lamp
 lantern
+man
 mistletoe
 moon
 morning
@@ -33,14 +36,11 @@ sister
 sky
 son
 squirrel
-stone wall
 thing
 town
 tree
 uncle
-wind
-man
-woman
-flatterer
 variable
-factor
+wall
+wind
+woman

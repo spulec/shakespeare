@@ -4,25 +4,22 @@ import string
 import sys
 from collections import OrderedDict, defaultdict
 
-# VARIABLE_MAP = defaultdict(int)
 class VariableStack(object):
     def __init__(self):
         self.map = {}
+        self.memory_stacks = defaultdict(list)
     def reset(self, reset_map=None):
         self.map = reset_map if reset_map else {}
     def __contains__(self, key):
         return key in self.map
     def __getitem__(self, key):
-        return self.map[key][-1]
+        return self.map[key]
     def __setitem__(self, key, val):
-        if key in self.map:
-            self.map[key][-1] = val
-        else:
-            self.map[key] = [val]
-    def push(self, key):
-        self.map[key].append(None)
+        self.map[key] = val
+    def push(self, key, value):
+        self.memory_stacks[key].append(value)
     def pop(self, key):
-        self.map[key].pop(-1)
+        self.map[key] = self.memory_stacks[key].pop(-1)
 
 
 VARIABLE_MAP = VariableStack()
@@ -37,6 +34,7 @@ NEUTRAL_NOUNS = parse_txt("words/neutral_nouns.txt")
 NEGATIVE_NOUNS = parse_txt("words/negative_nouns.txt")
 POSITIVE_ADJECTIVES = parse_txt("words/positive_adjs.txt")
 NEGATIVE_ADJECTIVES = parse_txt("words/negative_adjs.txt")
+ZERO_WORDS = ['nothing']
 YOU_WORDS = ["you", "thee", "yourself", "thyself", "thou"]
 ME_WORDS = ["me", "myself", "i"]
 
@@ -97,7 +95,7 @@ def main(*args):
     variables_paragraph = groups.pop(0)
 
     def parse_variables(variables):
-        return [variable.split(",", 1)[0] for variable in variables.splitlines()]
+        return [variable.split(",", 1)[0].split()[-1] for variable in variables.splitlines()]
 
     variables = parse_variables(variables_paragraph)
     for variable in variables:
@@ -124,7 +122,6 @@ def main(*args):
             except GoToException as exc:
                 destination = exc.destination.strip(".")
                 if destination.startswith("scene"):
-                    # print("skip to scene", destination)
                     skip_to_scene = destination
                     continue
                 else:
@@ -143,14 +140,13 @@ def go_through_scenes(act, skip_to_scene=None):
 
 
 def parse_characters_from_direction(direction):
-    return {
-        word for word
-        in direction[1:-1].split()  # Strip out [ and ]
-        if word not in ["enter", "exit", "exeunt", "and", "the"]
-    }
+    direction = direction[1:-1]
+    for word in ["enter", "exit", "exeunt"]:
+        direction = direction.replace(word + " ", "")
+    return set(actor.split()[-1] for actor in direction.split(" and "))
+
 
 def parse_question(sentence, speaker, spoken_to):
-    # print("found a Q:", sentence)
     if " than " in sentence:
         part1, part2 = sentence.split(" than ")
         return (
@@ -170,6 +166,7 @@ def parse_scene(sentences):
     global ON_STAGE
 
     speaker = None
+    last_sentence_was_question = False
     last_question_true = False
     for sentence in sentences:
         if not sentence:
@@ -183,32 +180,40 @@ def parse_scene(sentences):
         elif ":" in sentence:
             speaker, sentence = sentence.split(":")
             sentence = sentence.strip()
+            speaker = speaker.split()[-1]
 
         spoken_to = list(ON_STAGE - {speaker})[0]
         cleaned_line = clean_line(sentence)
 
-        if last_question_true:
-            goto = sentence.split("if so, let us proceed to ")[1]
-            last_question_true = False
-            raise GoToException(goto)
+        if last_sentence_was_question:
+            if sentence.startswith("if so,") and last_question_true:
+                goto = sentence.split("if so, let us ")[1].split(" to ", 1)[1]
+                last_question_true = False
+                raise GoToException(goto)
+            elif sentence.startswith("if not,") and not last_question_true:
+                goto = sentence.split("if not, let us ")[1].split(" to ", 1)[1]
+                last_question_true = False
+                raise GoToException(goto)
+        if sentence.endswith("?"):
+            last_sentence_was_question = True
+            last_question_true = parse_question(cleaned_line, speaker, spoken_to)
+            continue
 
         if sentence.startswith('let us return to'):
             raise GoToException(sentence.split("let us return to ", 1)[1])
 
-        if sentence.endswith("?"):
-            last_question_true = parse_question(cleaned_line, speaker, spoken_to)
-            continue
         for you_word in YOU_WORDS:
             if cleaned_line.startswith(you_word):
                 cleaned_line = cleaned_line[len(you_word):]
                 # TODO this means we are assigning you. Check later for self assignment
                 break
-        result = parse_expression(cleaned_line, speaker, spoken_to)
-        if result:
-            # print("Setting", spoken_to, result)
-            # if spoken_to == "romeo":
-            #     import pdb;pdb.set_trace()
+        try:
+            result = parse_expression(cleaned_line, speaker, spoken_to)
+        except TypeError:
+            import pdb;pdb.set_trace()
+        if result is not None:
             VARIABLE_MAP[spoken_to] = result
+        last_sentence_was_question = False
 
 
 def parse_expression(expression, speaker, spoken_to):
@@ -217,7 +222,12 @@ def parse_expression(expression, speaker, spoken_to):
     if expression.count(" as ") > 1:
         expression = expression.split(" as ", 2)[2]
     if expression in ["speak your mind", "speak thy mind"]:
-        say_output(chr(VARIABLE_MAP[spoken_to]))
+        try:
+            say_output(chr(VARIABLE_MAP[spoken_to]))
+        except ValueError:
+            print(VARIABLE_MAP.map)
+            print("yoyo", spoken_to, VARIABLE_MAP[spoken_to])
+            import pdb;pdb.set_trace()
         return
     if expression in ["open your heart"]:
         say_output(VARIABLE_MAP[spoken_to])
@@ -226,16 +236,25 @@ def parse_expression(expression, speaker, spoken_to):
         if "heart" in expression:  # Number
             return int(input())
         else:  # Letter
-            return input()
+            input_char = ord(sys.stdin.read(1))
+            if input_char == 10:
+                # EOF in C vs Python
+                input_char = -1
+            return input_char
     if expression.startswith("remember "):
-        expression = expression.split("remember ", 1)[1]
+        expression = expression.split("remember ", 1)[1].split()[-1]
         if expression in YOU_WORDS:
-            VARIABLE_MAP.push(speaker)
+            VARIABLE_MAP.push(spoken_to, VARIABLE_MAP[spoken_to])
         elif expression in ME_WORDS:
-            VARIABLE_MAP.push(spoken_to)
+            VARIABLE_MAP.push(speaker, VARIABLE_MAP[speaker])
         else:
             import pdb;pdb.set_trace()
+    if expression.startswith("recall "):
+        VARIABLE_MAP.pop(spoken_to)
+        return
 
+    if expression in ZERO_WORDS:
+        return 0
     if expression in YOU_WORDS:
         try:
             return VARIABLE_MAP[spoken_to]
@@ -282,11 +301,16 @@ def parse_expression(expression, speaker, spoken_to):
             else:
                 part1, part2 = split_for_expression(diffs)
             operator_func = OPERATOR_MAP[word]
-            return operator_func(
-                parse_expression(part1, speaker, spoken_to),
-                parse_expression(part2, speaker, spoken_to)
-            )
+            try:
+                return operator_func(
+                    parse_expression(part1, speaker, spoken_to),
+                    parse_expression(part2, speaker, spoken_to)
+                )
+            except TypeError:
+                import pdb;pdb.set_trace()
 
+        if word in ZERO_WORDS:
+            nouns.append((word, 0))
         if word in ME_WORDS:
             nouns.append((word, VARIABLE_MAP[speaker]))
         if word in YOU_WORDS:
@@ -299,14 +323,10 @@ def parse_expression(expression, speaker, spoken_to):
             nouns.append((word, -1))
 
     count = 0
+    if not nouns: return
     for noun, base_multiplier in nouns:
         current_line, expression = expression.split(noun, 1)
-        try:
-            count += calculate_adjectives(current_line, base_multiplier)
-        except Exception as exc:
-            import pdb;pdb.set_trace()
-            foo = "bar"
-    # print("\tend expression", copy_exp, count)
+        count += calculate_adjectives(current_line, base_multiplier)
     return count
 
 
