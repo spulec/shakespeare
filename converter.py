@@ -124,8 +124,6 @@ def main(*args):
                 if destination.startswith("scene"):
                     skip_to_scene = destination
                     continue
-                else:
-                    import pdb;pdb.set_trace()
             break
 
 def go_through_scenes(act, skip_to_scene=None):
@@ -159,8 +157,6 @@ def parse_question(sentence, speaker, spoken_to):
             parse_expression(part1, speaker, spoken_to) ==
             parse_expression(part2, speaker, spoken_to)
         )
-    else:
-        import pdb;pdb.set_trace()
 
 def parse_scene(sentences):
     global ON_STAGE
@@ -207,10 +203,7 @@ def parse_scene(sentences):
                 cleaned_line = cleaned_line[len(you_word):]
                 # TODO this means we are assigning you. Check later for self assignment
                 break
-        try:
-            result = parse_expression(cleaned_line, speaker, spoken_to)
-        except TypeError:
-            import pdb;pdb.set_trace()
+        result = parse_expression(cleaned_line, speaker, spoken_to)
         if result is not None:
             VARIABLE_MAP[spoken_to] = result
         last_sentence_was_question = False
@@ -222,12 +215,7 @@ def parse_expression(expression, speaker, spoken_to):
     if expression.count(" as ") > 1:
         expression = expression.split(" as ", 2)[2]
     if expression in ["speak your mind", "speak thy mind"]:
-        try:
-            say_output(chr(VARIABLE_MAP[spoken_to]))
-        except ValueError:
-            print(VARIABLE_MAP.map)
-            print("yoyo", spoken_to, VARIABLE_MAP[spoken_to])
-            import pdb;pdb.set_trace()
+        say_output(chr(VARIABLE_MAP[spoken_to]))
         return
     if expression in ["open your heart"]:
         say_output(VARIABLE_MAP[spoken_to])
@@ -247,8 +235,6 @@ def parse_expression(expression, speaker, spoken_to):
             VARIABLE_MAP.push(spoken_to, VARIABLE_MAP[spoken_to])
         elif expression in ME_WORDS:
             VARIABLE_MAP.push(speaker, VARIABLE_MAP[speaker])
-        else:
-            import pdb;pdb.set_trace()
     if expression.startswith("recall "):
         VARIABLE_MAP.pop(spoken_to)
         return
@@ -256,10 +242,7 @@ def parse_expression(expression, speaker, spoken_to):
     if expression in ZERO_WORDS:
         return 0
     if expression in YOU_WORDS:
-        try:
-            return VARIABLE_MAP[spoken_to]
-        except KeyError:
-            import pdb;pdb.set_trace()
+        return VARIABLE_MAP[spoken_to]
 
     def split_for_expression(diffs):
         indexes = []
@@ -301,13 +284,10 @@ def parse_expression(expression, speaker, spoken_to):
             else:
                 part1, part2 = split_for_expression(diffs)
             operator_func = OPERATOR_MAP[word]
-            try:
-                return operator_func(
-                    parse_expression(part1, speaker, spoken_to),
-                    parse_expression(part2, speaker, spoken_to)
-                )
-            except TypeError:
-                import pdb;pdb.set_trace()
+            return operator_func(
+                parse_expression(part1, speaker, spoken_to),
+                parse_expression(part2, speaker, spoken_to)
+            )
 
         if word in ZERO_WORDS:
             nouns.append((word, 0))
