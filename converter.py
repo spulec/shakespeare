@@ -176,18 +176,18 @@ def parse_scene(sentences):
         elif ":" in sentence:
             speaker, sentence = sentence.split(":")
             sentence = sentence.strip()
-            speaker = speaker.split()[-1]
+            speaker = speaker.split()[-1]  # Just grab last word of speaker name
 
         spoken_to = list(ON_STAGE - {speaker})[0]
         cleaned_line = clean_line(sentence)
 
         if last_sentence_was_question:
-            if sentence.startswith("if so,") and last_question_true:
-                goto = sentence.split("if so, let us ")[1].split(" to ", 1)[1]
+            if sentence.startswith("if so, let us ") and last_question_true:
+                goto = sentence.removeprefix("if so, let us ").split(" to ", 1)[1]
                 last_question_true = False
                 raise GoToException(goto)
-            elif sentence.startswith("if not,") and not last_question_true:
-                goto = sentence.split("if not, let us ")[1].split(" to ", 1)[1]
+            elif sentence.startswith("if not, let us") and not last_question_true:
+                goto = sentence.removeprefix("if not, let us ").split(" to ", 1)[1]
                 last_question_true = False
                 raise GoToException(goto)
         if sentence.endswith("?"):
@@ -196,7 +196,7 @@ def parse_scene(sentences):
             continue
 
         if sentence.startswith('let us return to'):
-            raise GoToException(sentence.split("let us return to ", 1)[1])
+            raise GoToException(sentence.removeprefix("let us return to "))
 
         for you_word in YOU_WORDS:
             if cleaned_line.startswith(you_word):
@@ -230,7 +230,7 @@ def parse_expression(expression, speaker, spoken_to):
                 input_char = -1
             return input_char
     if expression.startswith("remember "):
-        expression = expression.split("remember ", 1)[1].split()[-1]
+        expression = expression.removeprefix("remember ").split()[-1]
         if expression in YOU_WORDS:
             VARIABLE_MAP.push(spoken_to, VARIABLE_MAP[spoken_to])
         elif expression in ME_WORDS:
